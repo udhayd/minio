@@ -1,0 +1,10 @@
+{{ range .Values.tenants }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-policy-cm
+  namespace: {{ .namespace }}
+{{ end }}
+data:
+  job.sh:
+    {{- toYaml .Values.configmap.jobsh | nindent 2 }}

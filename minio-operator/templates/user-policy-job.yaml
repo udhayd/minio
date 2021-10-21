@@ -1,0 +1,11 @@
+{{ range .Values.tenants }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-job
+  namespace: {{ .namespace }}
+{{- end }}
+spec:
+  template:
+    spec:
+      {{- toYaml .Values.userjob | nindent 8 }}
