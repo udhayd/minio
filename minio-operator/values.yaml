@@ -155,30 +155,11 @@ tenants:
     priorityClassName: ""
 
 configmap:
-  jobsh: |
-    #!/bin/sh
-    cat >/tmp/ukgbs.json <<EOF
-    {
-        "Version": "2012-10-17",
-        "Statement": [{
-                "Effect": "Allow",
-                "Action": [
-                        "s3:GetObject",
-                        "s3:ListBucket",
-                        "s3:PutObject"
-                ],
-                "Resource": [
-                        "arn:aws:s3:::test/*"
-                ]
-        }]
-    }
-    EOF
-    until mc ls myminio >/dev/null 2>&1;do sleep 10;mc ls myminio;done
-    mc mb myminio/test
-    mc admin user add myminio/ test test-123#
-    mc admin policy add myminio/ test /tmp/ukgbs.json
-    mc admin policy set myminio test user=test
-
+  enabled: true
+  username: test
+  bucketname: test-bucket
+  policyname: test-policy
+  
 userjob:
   restartPolicy: OnFailure
   volumes:
@@ -206,3 +187,8 @@ userjob:
           key: secretkey
     - name: MC_HOST_myminio
       value: https://$(accesskey):$(secretkey)@minio.minio-server
+    - name: PASS
+      valueFrom:
+        secretKeyRef:
+          name: user-secret
+          key: pass
