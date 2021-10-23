@@ -1,9 +1,9 @@
 {{- if .Values.configmap.enabled }}
-{{ range .Values.tenants }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: user-policy-cm
+{{ range .Values.tenants }}
   namespace: {{ .namespace }}
 {{ end }}
 data:
