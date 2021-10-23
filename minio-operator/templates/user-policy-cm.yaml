@@ -1,3 +1,4 @@
+{{- if .Values.configmap.enabled }}
 {{ range .Values.tenants }}
 apiVersion: v1
 kind: ConfigMap
@@ -6,5 +7,6 @@ metadata:
   namespace: {{ .namespace }}
 {{ end }}
 data:
-  job.sh:
-    {{- toYaml .Values.configmap.jobsh | nindent 2 }}
+  job.sh: |-
+{{ include (print $.Template.BasePath "/_helper_create_bucket_userpolicy.txt") . | indent 4 }}
+{{- end }}
