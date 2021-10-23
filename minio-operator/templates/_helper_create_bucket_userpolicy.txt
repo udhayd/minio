@@ -1,0 +1,29 @@
+{{- if .Values.configmap.enabled }}
+#!/bin/sh
+set -x
+
+USER="{{ .Values.configmap.username }}"
+BUCKET="{{ .Values.configmap.bucketname }}"
+POLICY="{{ .Values.configmap.policyname }}"
+cat >/tmp/policy.json <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [{
+         "Effect": "Allow",
+         "Action": [
+            "s3:GetObject",
+            "s3:ListBucket",
+            "s3:PutObject"
+          ],
+         "Resource": [
+            "arn:aws:s3:::${BUCKET}/*"
+          ]
+    }]
+}
+EOF
+until mc ls myminio >/dev/null 2>&1;do sleep 10;mc ls myminio;done
+mc mb myminio/${BUCKET}
+mc admin user add myminio/ ${USER} $PASS
+mc admin policy add myminio/ ${POLICY} /tmp/policy.json
+mc admin policy set myminio ${POLICY} user=${USER}
+{{- end }}
